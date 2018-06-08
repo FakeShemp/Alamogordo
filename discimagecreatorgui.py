@@ -13,10 +13,10 @@
 
 import sys
 from PyQt5 import QtWidgets
-from gui import DicGui
+from gui import RedumpGui
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    window = DicGui(app)
+    window = RedumpGui(app)
     window.show()
     sys.exit(app.exec_())

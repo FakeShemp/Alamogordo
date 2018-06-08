@@ -1,0 +1,18 @@
+{
+    "Audio CD": {
+        "c2": "/c2",
+        "disc_type": "cd"
+    },
+    "Sony PlayStation": {
+        "c2": "/c2",
+        "disc_type": "cd",
+        "nl": "/nl"
+    },
+    "Sony PlayStation 2 (CD)": {
+        "c2": "/c2",
+        "disc_type": "cd"
+    },
+    "Sony PlayStation 2 (DVD)": {
+        "disc_type": "dvd"
+    }
+}

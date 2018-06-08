@@ -11,68 +11,85 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from os import path, listdir
+from os import path, listdir, getcwd
 from PyQt5.QtGui import QTextCursor
 import subprocess
 import zipfile
+import json
+import settings
 
 
-def read_disc(gui, disc_profiles, app):
-    gui.statusBar.showMessage("")
-    cmd = assemble_commandline(gui, disc_profiles)
-    if cmd is not None:
-        gui.lock_input(True)
-        gui.pt_console.clear()
-        app.processEvents()
-        # TODO - Run pre-dump programs
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        buf = bytearray()
-        while True:
-            c = p.stdout.read(1)
-            if c == b"" and p.poll() is not None:
-                break
-            if c == b"\r":
-                n = p.stdout.read(1)
-                if n == b"\n":
-                    gui.pt_console.appendPlainText(str(buf.decode('UTF-8')))
-                    app.processEvents()
-                    buf = bytearray()
-                else:
-                    cursor = gui.pt_console.textCursor()
-                    cursor.select(QTextCursor.LineUnderCursor)
-                    cursor.removeSelectedText()
-                    gui.pt_console.insertPlainText(str(buf.decode('UTF-8')))
-                    app.processEvents()
-                    buf = bytearray()
-                    buf += n
+def execute_dic(cmd, gui, app):
+    gui.lock_input(True)
+    gui.pt_console.clear()
+    app.processEvents()
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    buf = bytearray()
+    while True:
+        c = p.stdout.read(1)
+        if c == b"" and p.poll() is not None:
+            break
+        if c == b"\r":
+            n = p.stdout.read(1)
+            if n == b"\n":
+                gui.pt_console.appendPlainText(str(buf.decode('UTF-8')))
+                app.processEvents()
+                buf = bytearray()
             else:
-                buf += c
-        if p.returncode != 0:
-            gui.statusBar.showMessage("Reading image failed! Please read DIC output.")
-        # TODO - Run post-dump programs
-        if gui.zipFiles.isChecked() and p.returncode == 0:
-            zip_logs(path.dirname(cmd[3]))
+                cursor = gui.pt_console.textCursor()
+                cursor.select(QTextCursor.LineUnderCursor)
+                cursor.removeSelectedText()
+                gui.pt_console.insertPlainText(str(buf.decode('UTF-8')))
+                app.processEvents()
+                buf = bytearray()
+                buf += n
+        else:
+            buf += c
     gui.lock_input(False)
 
+    return p.returncode
 
-def assemble_commandline(gui, disc_profiles):
-    # Check for DiscImageCreator
-    if path.isfile("Release_ANSI\DiscImageCreator.exe"):
-        cmd = [path.abspath("Release_ANSI\DiscImageCreator.exe")]
+
+def read_disc(gui, app):
+    gui.statusBar.showMessage("")
+    cmd = assemble_commandline(gui)
+
+    # Run DiscImageCreator
+    if cmd is not None:
+        return_code = execute_dic(cmd, gui, app)
+        if return_code != 0:
+            gui.statusBar.showMessage("Reading image failed! Please read DIC output.")
+            return return_code
+
+    # Zip log files
+    if gui.zipFiles.isChecked():
+        zip_logs(path.dirname(cmd[3]))
+
+
+def assemble_commandline(gui):
+    if path.isfile(settings.settings_file):
+        js = open(settings.settings_file).read()
+        data_settings = json.loads(js)
+
+    # Add DiscImageCreator.exe path
+    cmd = []
+    if settings.dic_path in data_settings:
+        cmd.append(data_settings[settings.dic_path])
+    elif path.isfile(path.abspath(path.join(getcwd(), 'DiscImageCreator.exe'))) is True:
+        cmd.append(path.abspath(path.join(getcwd(), 'DiscImageCreator.exe')))
     else:
         gui.statusBar.showMessage("DiscImageCreator.exe not found!")
         return None
 
-    # Check disc type
-    profile = disc_profiles[gui.cb_discType.currentText()]
+    # Get profiles
+    profiles = disc_profiles()
+    current_profile = profiles[gui.cb_discType.currentText()]
 
-    dt = profile.disc_type
-    if dt:
-        cmd.append(dt)
-    else:
-        return None
+    # Add disc type
+    if 'disc_type' in current_profile:
+        cmd.append(current_profile['disc_type'])
 
-    # Check disc drive
+    # Add drive letter
     dl = drive_letter(gui)
     if dl is not None:
         cmd.append(str(dl))
@@ -80,7 +97,7 @@ def assemble_commandline(gui, disc_profiles):
         gui.statusBar.showMessage(gui.no_drives)
         return None
 
-    # Check output path
+    # Add output file path
     fn = file_name(gui)
     dr = directory(gui)
     if fn is not None and dr is not None:
@@ -88,17 +105,35 @@ def assemble_commandline(gui, disc_profiles):
     else:
         return None
 
-    # Check drive speed
+    # Add drive read speed
     ds = drive_speed(gui)
     if ds is not None:
         cmd.append(ds)
     else:
         return None
 
-    # Check extra options
-    cmd.extend(profile.options)
+    # Add extra switches
+    if 'c2' in current_profile:
+        if settings.c2reads in data_settings:
+            cmd.append(current_profile['c2'] + ' ' + str(data_settings[settings.c2reads]))
+        else:
+            cmd.append(current_profile['c2'])
+
+    if 'nl' in current_profile:
+        cmd.append(current_profile['nl'])
+
+    if settings.beep not in data_settings:
+        cmd.append('/q')
 
     return cmd
+
+
+def disc_profiles():
+    if path.isfile(settings.profiles_file):
+        js = open(settings.profiles_file).read()
+        data_profiles = json.loads(js)
+        return data_profiles
+    return None
 
 
 def file_name(gui):
@@ -160,3 +195,4 @@ def zip_logs(working_dir):
             logs.write(path.join(working_dir, file), arcname=file)
         logs.close()
     return output
+

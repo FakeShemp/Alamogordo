@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>648</width>
-    <height>365</height>
+    <width>576</width>
+    <height>411</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -234,6 +234,94 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>576</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="action_stopDrive"/>
+    <addaction name="action_spinUpDrive"/>
+    <addaction name="action_ejectTray"/>
+    <addaction name="action_closeTray"/>
+    <addaction name="action_resetDrive"/>
+    <addaction name="separator"/>
+    <addaction name="action_parseCcd"/>
+    <addaction name="action_arseMds"/>
+    <addaction name="separator"/>
+    <addaction name="action_settings"/>
+    <addaction name="separator"/>
+    <addaction name="action_exit"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <action name="action_settings">
+   <property name="text">
+    <string>Settings...</string>
+   </property>
+   <property name="toolTip">
+    <string>Open settings menu</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::PreferencesRole</enum>
+   </property>
+  </action>
+  <action name="action_exit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="toolTip">
+    <string>Close the application.</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
+  </action>
+  <action name="action_stopDrive">
+   <property name="text">
+    <string>Stop Drive</string>
+   </property>
+  </action>
+  <action name="action_spinUpDrive">
+   <property name="text">
+    <string>Spin Up Drive</string>
+   </property>
+  </action>
+  <action name="action_ejectTray">
+   <property name="text">
+    <string>Eject Tray</string>
+   </property>
+  </action>
+  <action name="action_closeTray">
+   <property name="text">
+    <string>Close Tray</string>
+   </property>
+  </action>
+  <action name="action_resetDrive">
+   <property name="text">
+    <string>Reset Drive</string>
+   </property>
+  </action>
+  <action name="action_parseCcd">
+   <property name="text">
+    <string>Parse CCD Sub File</string>
+   </property>
+  </action>
+  <action name="action_arseMds">
+   <property name="text">
+    <string>Parse MDS Sub File</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
