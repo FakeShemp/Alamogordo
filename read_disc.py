@@ -20,7 +20,6 @@ import settings
 
 
 def execute_dic(cmd, gui, app):
-    gui.lock_input(True)
     gui.pt_console.clear()
     app.processEvents()
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -45,25 +44,81 @@ def execute_dic(cmd, gui, app):
                 buf += n
         else:
             buf += c
-    gui.lock_input(False)
 
     return p.returncode
 
 
+def execute_psxt001z():
+    return None
+
+
+def execute_edccchk():
+    return None
+
+
+def gather_image_info(dir, file):
+    image_info = {}
+    base_path = path.join(dir, file)[:-4]
+
+    # Gather CUE
+    if path.isfile(base_path + '.cue'):
+        cue = open(base_path + '.cue', 'r').read()
+        image_info['cue'] = cue
+
+    # Gather ClrMamePro DAT
+    if path.isfile(base_path + '.dat'):
+        dat = open(base_path + '.dat', 'r').read()
+        image_info['cmp_dat'] = dat
+
+    # Gather Write Offset
+    if path.isfile(base_path + '_disc.txt'):
+        with open(base_path + '_disc.txt') as f:
+            for line in f:
+                if 'CD Offset(Byte)' in line:
+                    image_info['write_offset'] = int(line.split('(Samples)', 1)[1])
+                    break
+
+    # Gather PVD
+    if path.isfile(base_path + '_mainInfo.txt'):
+        with open(base_path + '_mainInfo.txt') as f:
+            pvd = ""
+            for i, line in enumerate(f):
+                if 51 < i < 58:
+                    pvd += line
+                elif i >= 58:
+                    break
+        image_info['pvd'] = pvd
+
+    print(image_info)
+    return image_info
+
+
+def show_image_info():
+    return None
+
+
 def read_disc(gui, app):
     gui.statusBar.showMessage("")
+    gui.lock_input(True)
+
     cmd = assemble_commandline(gui)
 
     # Run DiscImageCreator
-    if cmd is not None:
-        return_code = execute_dic(cmd, gui, app)
-        if return_code != 0:
-            gui.statusBar.showMessage("Reading image failed! Please read DIC output.")
-            return return_code
+#    if cmd is not None:
+#        return_code = execute_dic(cmd, gui, app)
+#        if return_code != 0:
+#            gui.statusBar.showMessage("Reading image failed! Please read DIC output.")
+#            gui.lock_input(False)
+#            return return_code
+
+    # Gather redump.org necessary info
+    gather_image_info(directory(gui), file_name(gui))
 
     # Zip log files
     if gui.zipFiles.isChecked():
         zip_logs(path.dirname(cmd[3]))
+
+    gui.lock_input(False)
 
 
 def assemble_commandline(gui):
