@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>Settings</class>
+ <widget class="QDialog" name="Settings">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Settings</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" colspan="2">
@@ -47,6 +47,9 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -74,12 +77,15 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="le_c2">
+      <widget class="QSpinBox" name="sb_c2">
        <property name="minimumSize">
         <size>
-         <width>92</width>
+         <width>75</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="maximum">
+        <number>50000</number>
        </property>
       </widget>
      </item>
@@ -140,6 +146,9 @@
          <width>16777215</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -214,6 +223,9 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -233,12 +245,21 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>le_dicLocation</tabstop>
+  <tabstop>pb_dicBrowse</tabstop>
+  <tabstop>le_psxt001zLocation</tabstop>
+  <tabstop>pb_psxt001zBrowse</tabstop>
+  <tabstop>le_edccchkLocation</tabstop>
+  <tabstop>pb_edccchkBrowse</tabstop>
+  <tabstop>cb_beep</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>Settings</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -254,7 +275,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>Settings</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

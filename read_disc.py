@@ -89,34 +89,34 @@ def gather_image_info(dir, file):
                     break
         image_info['pvd'] = pvd
 
-    print(image_info)
     return image_info
 
 
-def show_image_info():
-    return None
+def show_image_info(info, gui):
+    gui.open_image_info_window(info)
 
 
 def read_disc(gui, app):
     gui.statusBar.showMessage("")
     gui.lock_input(True)
-
     cmd = assemble_commandline(gui)
 
     # Run DiscImageCreator
-#    if cmd is not None:
-#        return_code = execute_dic(cmd, gui, app)
-#        if return_code != 0:
-#            gui.statusBar.showMessage("Reading image failed! Please read DIC output.")
-#            gui.lock_input(False)
-#            return return_code
+    if cmd is not None:
+        return_code = execute_dic(cmd, gui, app)
+        if return_code != 0:
+            gui.statusBar.showMessage("Reading image failed! Please read DIC output.")
+            gui.lock_input(False)
+            return return_code
 
     # Gather redump.org necessary info
-    gather_image_info(directory(gui), file_name(gui))
+    image_info = gather_image_info(directory(gui), file_name(gui))
 
     # Zip log files
     if gui.zipFiles.isChecked():
         zip_logs(path.dirname(cmd[3]))
+
+    show_image_info(image_info, gui)
 
     gui.lock_input(False)
 
@@ -250,4 +250,3 @@ def zip_logs(working_dir):
             logs.write(path.join(working_dir, file), arcname=file)
         logs.close()
     return output
-

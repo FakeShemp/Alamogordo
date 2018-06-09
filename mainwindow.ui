@@ -254,7 +254,7 @@
     <addaction name="action_resetDrive"/>
     <addaction name="separator"/>
     <addaction name="action_parseCcd"/>
-    <addaction name="action_arseMds"/>
+    <addaction name="action_parseMds"/>
     <addaction name="separator"/>
     <addaction name="action_settings"/>
     <addaction name="separator"/>
@@ -311,19 +311,38 @@
    <property name="text">
     <string>Reset Drive</string>
    </property>
+   <property name="toolTip">
+    <string>Reset drive (Plextor drives only)</string>
+   </property>
   </action>
   <action name="action_parseCcd">
    <property name="text">
     <string>Parse CCD Sub File</string>
    </property>
   </action>
-  <action name="action_arseMds">
+  <action name="action_parseMds">
    <property name="text">
     <string>Parse MDS Sub File</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>le_fileName</tabstop>
+  <tabstop>le_dir</tabstop>
+  <tabstop>pb_browseDir</tabstop>
+  <tabstop>cb_driveLetter</tabstop>
+  <tabstop>rb_speed4</tabstop>
+  <tabstop>rb_speed8</tabstop>
+  <tabstop>rb_speed16</tabstop>
+  <tabstop>rb_speed48</tabstop>
+  <tabstop>rb_custom</tabstop>
+  <tabstop>le_customDriveSpeed</tabstop>
+  <tabstop>cb_discType</tabstop>
+  <tabstop>zipFiles</tabstop>
+  <tabstop>pb_start</tabstop>
+  <tabstop>pt_console</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
